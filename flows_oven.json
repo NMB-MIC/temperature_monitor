@@ -1,0 +1,523 @@
+[
+    {
+        "id": "edfda3c748a76196",
+        "type": "tab",
+        "label": "Oven_test",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "673e865b04e5b32c",
+        "type": "mqtt in",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "topic": "Cold_Junction_Temp",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "04d1b145274bf015",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 240,
+        "y": 140,
+        "wires": [
+            [
+                "66d2716bb138921e",
+                "cc5cc933ac9b6369"
+            ]
+        ]
+    },
+    {
+        "id": "7f8a438fd1579b9a",
+        "type": "mqtt in",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "topic": "Thermocouple_Temp",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "04d1b145274bf015",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 240,
+        "y": 200,
+        "wires": [
+            [
+                "59eb22da973c76df",
+                "b3ae76cb05f82824"
+            ]
+        ]
+    },
+    {
+        "id": "66d2716bb138921e",
+        "type": "function",
+        "z": "edfda3c748a76196",
+        "name": "set h",
+        "func": "global.set(\"h\",msg.payload);  //set พารามิเตอร์ชื่อ h\nreturn msg; ",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 430,
+        "y": 140,
+        "wires": [
+            [
+                "d93ea8e5a987f256"
+            ]
+        ]
+    },
+    {
+        "id": "59eb22da973c76df",
+        "type": "function",
+        "z": "edfda3c748a76196",
+        "name": "set c",
+        "func": "global.set(\"c\",msg.payload); //set parameter ชื่อ c\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 430,
+        "y": 200,
+        "wires": [
+            [
+                "18c1fa24e5d2b16d",
+                "abd3223d1b77baaa"
+            ]
+        ]
+    },
+    {
+        "id": "a0e766b9a028e001",
+        "type": "function",
+        "z": "edfda3c748a76196",
+        "name": "sample",
+        "func": "var dt = new Date();\nvar y = dt.getFullYear();\nvar m = (dt.getMonth()+1);\nvar d = dt.getDate();\nvar h = dt.getHours();\nvar min = dt.getMinutes();\nvar s = dt.getSeconds();\n\ndates = y + \"-\" + m + \"-\" + d;\ntimes = h + \":\" + min +\":\" + s;\n\ndata_h = global.get(\"h\"); //เรียกใช้พารามิเตอร์hที่ประกาศไว้ ที่function\ndata_c = global.get(\"c\");\n//data_f = global.get(\"f\");\narea = global.get(\"area\");\n\n\ncommand = `INSERT INTO [Oven_Temperature].[dbo].[Oven_Temp]`+\n`([Date],[Area],[Time],[Cold_Junction_Temp],[Thermocouple_Temp])`+\n `VALUES('`+ dates +`','`+area+`','`+times+`','`+data_h+`','`+data_c+`')`;\n \nmsg.payload = command;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 460,
+        "wires": [
+            [
+                "05dd95d0f7062e4c",
+                "4dbd06620343d72e"
+            ]
+        ]
+    },
+    {
+        "id": "5a5b8a914a985517",
+        "type": "inject",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "50",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 220,
+        "y": 460,
+        "wires": [
+            [
+                "a0e766b9a028e001"
+            ]
+        ]
+    },
+    {
+        "id": "05dd95d0f7062e4c",
+        "type": "debug",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "1ce075374475784f",
+        "type": "mqtt in",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "topic": "area",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "04d1b145274bf015",
+        "nl": false,
+        "rap": false,
+        "inputs": 0,
+        "x": 200,
+        "y": 300,
+        "wires": [
+            [
+                "59ec6c5d4413a3aa"
+            ]
+        ]
+    },
+    {
+        "id": "59ec6c5d4413a3aa",
+        "type": "function",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "func": "global.set(\"area\",msg.payload);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 390,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9d304caaaee2b5d8",
+        "type": "function",
+        "z": "edfda3c748a76196",
+        "name": "top100",
+        "func": "var sqlCommand = (`SELECT TOP (100) [Date]\n      ,convert(varchar,[Time],8)\n      ,[Area]\n      ,[Cold_Junction_Temp]\n      ,[Thermocouple_Temp]\n      FROM [Oven_Temperature].[dbo].[Oven_Temp]\n      where Area = 'Over_test'\n  order by [Date] desc , [Time] desc  `)\nmsg.payload = sqlCommand\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 560,
+        "wires": [
+            [
+                "55272ccd1fa55953",
+                "90fb75c2f84372f8"
+            ]
+        ]
+    },
+    {
+        "id": "b3ae76cb05f82824",
+        "type": "debug",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "cc5cc933ac9b6369",
+        "type": "debug",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 470,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "d93ea8e5a987f256",
+        "type": "ui_gauge",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "group": "37ae832d.03ad1c",
+        "order": 1,
+        "width": 7,
+        "height": 4,
+        "gtype": "gage",
+        "title": "<i class=\"fa fa-thermometer-half\"></i> Cold Junction Temp",
+        "label": "C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "300",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "className": "",
+        "x": 830,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "18c1fa24e5d2b16d",
+        "type": "ui_gauge",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "group": "37ae832d.03ad1c",
+        "order": 2,
+        "width": 7,
+        "height": 4,
+        "gtype": "gage",
+        "title": "<i class=\"fa fa-thermometer-half\"></i> Thermocouple Temp",
+        "label": "C",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "300",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "className": "",
+        "x": 820,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "a015aad8955e0842",
+        "type": "ui_template",
+        "z": "edfda3c748a76196",
+        "group": "37ae832d.03ad1c",
+        "name": "",
+        "order": 6,
+        "width": "15",
+        "height": 7,
+        "format": "\n<table id = \"table\" border =\"1\" >\n    <tr style=\"background-color:#04593e\">\n        <th> Date </th>\n        <th> time </th>\n        <th> Area </th>\n        <th> Cold Junction Temp </th>\n        <th> Thermocouple Temp </th>\n          </tr>\n    <tbody>\n        <tr ng-repeat =\"row in msg.payload\">\n            <td style=\"text-align:center\" ng-repeat=\"item in row\">{{item}}</td>\n        </tr>\n    </tbody>\n</table>",
+        "storeOutMessages": false,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 820,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "abd3223d1b77baaa",
+        "type": "ui_chart",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "group": "37ae832d.03ad1c",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "label": "Machine1",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "cubic",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "300",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "86400",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 740,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4dbd06620343d72e",
+        "type": "MSSQL-UCGv2",
+        "z": "edfda3c748a76196",
+        "mssqlCN": "e4f16d3f.f720b",
+        "name": "insertData",
+        "query": "",
+        "outField": "payload",
+        "x": 550,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "55272ccd1fa55953",
+        "type": "MSSQL-UCGv2",
+        "z": "edfda3c748a76196",
+        "mssqlCN": "5383d396720c68a1",
+        "name": "GetTable",
+        "query": "",
+        "outField": "payload",
+        "x": 620,
+        "y": 560,
+        "wires": [
+            [
+                "a015aad8955e0842"
+            ]
+        ]
+    },
+    {
+        "id": "9f6bb2c9a07ed258",
+        "type": "comment",
+        "z": "edfda3c748a76196",
+        "name": "Database",
+        "info": "",
+        "x": 100,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "2f566593fb86902e",
+        "type": "comment",
+        "z": "edfda3c748a76196",
+        "name": " topic in ",
+        "info": "",
+        "x": 70,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "91a0705d65fd6dc9",
+        "type": "inject",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "50",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payloadType": "date",
+        "x": 210,
+        "y": 560,
+        "wires": [
+            [
+                "9d304caaaee2b5d8"
+            ]
+        ]
+    },
+    {
+        "id": "90fb75c2f84372f8",
+        "type": "debug",
+        "z": "edfda3c748a76196",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 570,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "04d1b145274bf015",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.1.100",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "37ae832d.03ad1c",
+        "type": "ui_group",
+        "name": "Oven Machine 1",
+        "tab": "8167ed42.67334",
+        "order": 1,
+        "disp": true,
+        "width": "15",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "e4f16d3f.f720b",
+        "type": "MSSQL-UCGv2-CN",
+        "name": "insertdata",
+        "server": "localhost\\SQLEXPRESS",
+        "port": "1433",
+        "encyption": false,
+        "database": "Oven_Temperature",
+        "pool": "20",
+        "connectionTimeout": "16000",
+        "requestTimeout": "15000"
+    },
+    {
+        "id": "5383d396720c68a1",
+        "type": "MSSQL-UCGv2-CN",
+        "name": "GetTable",
+        "server": "192.168.1.100\\SQLEXPRESS",
+        "port": "1433",
+        "encyption": false,
+        "database": "Oven_Temperature",
+        "pool": "20",
+        "connectionTimeout": "16000",
+        "requestTimeout": "15000"
+    },
+    {
+        "id": "8167ed42.67334",
+        "type": "ui_tab",
+        "name": "Oven Machine",
+        "icon": "dashboard",
+        "order": 8,
+        "disabled": false,
+        "hidden": false
+    }
+]
